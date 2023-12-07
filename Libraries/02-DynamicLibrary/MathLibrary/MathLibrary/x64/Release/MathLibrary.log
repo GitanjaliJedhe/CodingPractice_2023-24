@@ -1,0 +1,9 @@
+﻿  pch.cpp
+  dllmain.cpp
+  MathLibrary.cpp
+     Creating library C:\Users\gitan\OneDrive\Documents\Gitanjali-Dilip-Jedhe\03-Practice\CodingPractice_2023-24\Libraries\02-DynamicLibrary\MathLibrary\x64\Release\MathLibrary.lib and object C:\Users\gitan\OneDrive\Documents\Gitanjali-Dilip-Jedhe\03-Practice\CodingPractice_2023-24\Libraries\02-DynamicLibrary\MathLibrary\x64\Release\MathLibrary.exp
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 7 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  MathLibrary.vcxproj -> C:\Users\gitan\OneDrive\Documents\Gitanjali-Dilip-Jedhe\03-Practice\CodingPractice_2023-24\Libraries\02-DynamicLibrary\MathLibrary\x64\Release\MathLibrary.dll
