@@ -1,0 +1,74 @@
+Reference: https://www.geeksforgeeks.org/static-vs-dynamic-libraries/
+
+Steps to create a static library in UNIX or UNIX like OS:
+Compile library files.
+	gcc -c lib_mylib.c -o lib_mylib.o 
+ 
+Create static library. This step is to bundle multiple object files in one static library
+	ar rcs lib_mylib.a lib_mylib.o 
+ 
+create a driver program that uses above created static library
+	Compile the driver program.
+		gcc -c driver.c -o driver.o
+		
+	Link the compiled driver program to the static library
+		gcc -o driver driver.o -L. lib_mylib.a
+		
+	Run the driver program
+		./driver 
+		
+		
+***************************************************************************************************************************************************************************
+
+Reference: https://www.geeksforgeeks.org/working-with-shared-libraries-set-2/
+
+1)Compile the file library.c file using the following command.:
+gcc -shared -fPIC -o liblibrary.so library.c
+
+Explaination: The flag-shared instructs the compiler that we are building a shared library. 
+The flag -fPIC is to generate position-independent code. The command generates a shared library liblibrary.so in the current working directory. 
+
+2)Compile the application.c file using the following command. 
+gcc application.c -L /home/geetanjali/coding/ -llibrary -o sample 
+
+Explaination: The flag -llibrary instructs the compiler to look for symbol definitions that are not available in the current code (signum function in our case). 
+The option -L is a hint to the compiler to look in the directory followed by the option for any shared libraries (during link-time only). 
+The command generates an executable named “sample“. 
+
+3)We have to add our working directory to the LD_LIBRARY_PATH environment variable. The following command does the same. 
+
+export LD_LIBRARY_PATH=/home/geetanjali/coding/:$LD_LIBRARY_PATH 
+
+4)You can now invoke our executable as shown. 
+./sample 
+
+***************************************************************************************************************************************************************************
+
+Reference: https://www.geeksforgeeks.org/static-and-dynamic-linking-in-operating-systems/
+
+Differences between static and dynamic linking in operating systems are:
+1)Definition
+Static Linking: The process of combining all necessary library routines and external references into a single executable file at compile-time. 
+Dynamic Linking: The process of linking external libraries and references at runtime, when the program is loaded or executed.
+
+2)Linking Time
+Static Linking: Occurs at compile-time. 
+Dynamic Linking: Occurs at runtime.
+
+3)File Size
+Static Linking: Generally larger file size, as all required libraries are included in the executable.
+Dynamic Linking: Smaller file size, as libraries are linked dynamically at runtime.
+
+4)Flexibility
+Static Linking: Less flexible, as any updates or changes to the libraries require recompilation and relinking of the entire program. 
+Dynamic Linking: More flexible, as libraries can be updated or replaced without recompiling the program.
+
+5)Performance
+Static Linking: Faster program startup and direct execution, as all libraries are already linked. 
+Dynamic Linking: Slightly slower program startup due to the additional linking process, but overall performance impact is minimal.
+
+6)Examples
+Static Linking: Executables with file extensions like .exe, .elf, .a, .lib, etc. 
+Dynamic Linking: Executables with file extensions like .dll, .so, .dylib, etc.
+
+***************************************************************************************************************************************************************************
