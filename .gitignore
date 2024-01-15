@@ -34,3 +34,5 @@
 /.vs
 /Libraries/01-StaticLibrary/StaticMath/.vs/StaticMath/v17
 *.bak
+/CPA/VECTOR/CLASS_VERSION/.vscode
+/CPA/VECTOR/TEMPLATE_VERSION/.vscode
