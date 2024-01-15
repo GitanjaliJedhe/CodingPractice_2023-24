@@ -1,0 +1,555 @@
+// header files
+#include <windows.h>
+#include <stdio.h> // for FileIO functions
+#include <stdlib.h> // for exit()
+#include "OGL.h"
+
+// TODO
+//OpenGL Header file
+#include <GL/glew.h> // This MUST be above "gl.h"
+#include <GL/gl.h>
+#include "vmath.h"
+
+using namespace vmath;
+
+// TODO
+// OpenGL Libraries
+#pragma comment(lib, "glew32.lib")
+#pragma comment(lib, "OpenGL32.lib")
+
+#define WIN_WIDTH 800
+#define WIN_HEIGHT 600
+
+// Global function declarations
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+
+// Global variable declarations
+HWND ghwnd_gdj = NULL;
+BOOL gbFullScreen_gdj = FALSE;
+HGLRC ghrc_gdj = NULL;
+FILE* gpFile_gdj = NULL;
+BOOL gbActiveWindow_gdj = FALSE;
+HDC ghdc_gdj = NULL;
+
+// ProgramblePipeline related Global Variables
+GLuint shaderProgramObject;
+
+GLfloat anglePyramid_gdj = 0.0f;
+GLfloat angleCube_gdj = 0.0f;
+
+enum
+{
+	AMC_ATTRIBUTE_POSITION = 0,
+	AMC_ATTRIBUTE_COLOR,
+	AMC_ATTRIBUTE_NORMAL,
+	AMC_ATTRIBUTE_TEXTURE0
+};
+
+GLuint vao_pyramid;
+GLuint vbo_pyramid_position;
+GLuint vbo_pyramid_color;
+
+GLuint vao_cube;
+GLuint vbo_cube_position;
+GLuint vbo_cube_color;
+
+GLuint mvpMatrixUniform;
+
+mat4 perspectiveProjectionMatrix;
+
+// Entry point function
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int iCmdShow)
+{
+	// function declarations
+	int initialize(void);
+	void ToggleFullScreen(void);
+	void display(void);
+	void update(void);
+	void uninitialize(void);
+
+	// variable declarations
+	WNDCLASSEX wndclass_gdj;
+	HWND hwnd_gdj;
+	MSG msg_gdj;
+	TCHAR szAppName_gdj[] = TEXT("MyWindow");
+	BOOL bDone_gdj = FALSE;
+	int xOrg_gdj, yOrg_gdj, x_gdj, y_gdj, width_gdj, height_gdj;
+	int iRetVal_gdj = 0;
+
+	// code
+	if (fopen_s(&gpFile_gdj, "Log.txt", "w") != 0)
+	{
+		MessageBox(NULL, TEXT("Creation of log file failed. Exiting..."), TEXT("FileI/O Error"), MB_OK);
+		exit(0);
+	}
+	else
+	{
+		fprintf(gpFile_gdj, "Log file is successfully created.\n");
+	}
+
+	// code
+	// Initialization of WNDCLASSEX structure
+	wndclass_gdj.cbSize = sizeof(WNDCLASSEX);
+	wndclass_gdj.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+	wndclass_gdj.cbClsExtra = 0;
+	wndclass_gdj.cbWndExtra = 0;
+	wndclass_gdj.lpfnWndProc = WndProc;
+	wndclass_gdj.hInstance = hInstance;
+	wndclass_gdj.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+	wndclass_gdj.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(MYICON));
+	wndclass_gdj.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wndclass_gdj.lpszClassName = szAppName_gdj;
+	wndclass_gdj.lpszMenuName = NULL;
+	wndclass_gdj.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(MYICON));
+
+	// Registering above WNDCLASSEX
+	RegisterClassEx(&wndclass_gdj);
+
+	x_gdj = (GetSystemMetrics(SM_CXSCREEN) - WIN_WIDTH) / 2;
+	y_gdj = (GetSystemMetrics(SM_CYSCREEN) - WIN_HEIGHT) / 2;
+
+	// Create Window
+	hwnd_gdj = CreateWindowEx(WS_EX_APPWINDOW,
+		szAppName_gdj,
+		TEXT("OpenGL | Gitanjali Dilip Jedhe"),
+		WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
+		x_gdj,
+		y_gdj,
+		WIN_WIDTH,
+		WIN_HEIGHT,
+		NULL,
+		NULL,
+		hInstance,
+		NULL
+	);
+
+	ghwnd_gdj = hwnd_gdj;
+
+	// TODO
+	// initialize
+	iRetVal_gdj = initialize();
+	if (iRetVal_gdj == -1)
+	{
+		fprintf(gpFile_gdj, "Choose pixel format failed\n");
+		uninitialize();
+	}
+	else if (iRetVal_gdj == -2)
+	{
+		fprintf(gpFile_gdj, "Set Pixel format failed\n");
+		uninitialize();
+	}
+	else if (iRetVal_gdj == -3)
+	{
+		fprintf(gpFile_gdj, "Create OpenGL context failed\n");
+		uninitialize();
+	}
+	if (iRetVal_gdj == -4)
+	{
+		fprintf(gpFile_gdj, "Making OpenGL context as current context failed\n");
+		uninitialize();
+	}
+	else if (iRetVal_gdj == -5)
+	{
+		fprintf(gpFile_gdj, "GLEW Initialization failed\n");
+		uninitialize();
+	}
+	else
+	{
+		fprintf(gpFile_gdj, "Successful\n");
+	}
+
+	ToggleFullScreen();
+
+	// Show the window
+	ShowWindow(hwnd_gdj, iCmdShow);
+
+	// foregrounding and focusing window
+	SetForegroundWindow(hwnd_gdj);
+	SetFocus(hwnd_gdj);
+
+	// Game Loop
+	while (bDone_gdj == FALSE)
+	{
+		if (PeekMessage(&msg_gdj, NULL, 0, 0, PM_REMOVE))
+		{
+			if (msg_gdj.message == WM_QUIT)
+				bDone_gdj = TRUE;
+			else
+			{
+				TranslateMessage(&msg_gdj);
+				DispatchMessage(&msg_gdj);
+			}
+		}
+		else
+		{
+			if (gbActiveWindow_gdj == TRUE)
+			{
+				// TODO
+				// Render the scence
+				display();
+
+				// update the scence
+				update();
+			}
+		}
+	}
+
+	// TODO
+	uninitialize();
+
+	return((int)msg_gdj.wParam);
+}
+
+// Callback function
+LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
+{
+	// function declarations
+	void ToggleFullScreen(void);
+	void resize(int, int);
+
+	// code
+	switch (iMsg)
+	{
+	case WM_SETFOCUS:
+		gbActiveWindow_gdj = TRUE;
+		break;
+
+	case WM_KILLFOCUS:
+		gbActiveWindow_gdj = FALSE;
+		break;
+
+	case WM_ERASEBKGND:
+		//break;
+		return 0;
+
+	case WM_CHAR:
+		switch (wParam)
+		{
+		case 'F':
+		case 'f':
+			ToggleFullScreen();
+			break;
+
+		case 27:
+			PostQuitMessage(0);
+			//DestroyWindow(hwnd);
+			break;
+
+		default:
+			break;
+		}
+		break;
+
+	case WM_SIZE:
+		resize(LOWORD(lParam), HIWORD(lParam));
+		break;
+
+	case WM_CLOSE:
+		DestroyWindow(hwnd);
+		break;
+
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+	default:
+		break;
+	}
+
+	return(DefWindowProc(hwnd, iMsg, wParam, lParam));
+}
+
+void ToggleFullScreen(void)
+{
+	// variable declarations
+	static DWORD dwStyle_gdj;
+	static WINDOWPLACEMENT wp_gdj;
+	MONITORINFO mi_gdj;
+
+	// code
+	wp_gdj.length = sizeof(WINDOWPLACEMENT);
+
+	if (gbFullScreen_gdj == FALSE)
+	{
+		dwStyle_gdj = GetWindowLong(ghwnd_gdj, GWL_STYLE);
+		if (dwStyle_gdj & WS_OVERLAPPEDWINDOW)
+		{
+			mi_gdj.cbSize = sizeof(MONITORINFO);
+
+			if (GetWindowPlacement(ghwnd_gdj, &wp_gdj) && GetMonitorInfo(MonitorFromWindow(ghwnd_gdj, MONITORINFOF_PRIMARY), &mi_gdj))
+			{
+				SetWindowLong(ghwnd_gdj, GWL_STYLE, dwStyle_gdj & ~WS_OVERLAPPEDWINDOW);
+				SetWindowPos(ghwnd_gdj, HWND_TOP, mi_gdj.rcMonitor.left, mi_gdj.rcMonitor.top, mi_gdj.rcMonitor.right - mi_gdj.rcMonitor.left, mi_gdj.rcMonitor.bottom - mi_gdj.rcMonitor.top, SWP_NOZORDER | SWP_FRAMECHANGED);
+			}
+			ShowCursor(FALSE);
+			gbFullScreen_gdj = TRUE;
+		}
+	}
+	else
+	{
+		SetWindowLong(ghwnd_gdj, GWL_STYLE, dwStyle_gdj | WS_OVERLAPPEDWINDOW);
+		SetWindowPlacement(ghwnd_gdj, &wp_gdj);
+		SetWindowPos(ghwnd_gdj, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER | SWP_FRAMECHANGED);
+
+		ShowCursor(TRUE);
+		gbFullScreen_gdj = FALSE;
+	}
+}
+
+int initialize(void)
+{
+	// TODO
+	// function declarations
+	void resize(int, int);
+	void PrintGLInfo(void);
+	void uninitialize(void);
+
+	// variable declarations
+	PIXELFORMATDESCRIPTOR pfd_gdj;
+	int iPixelFormatIndex = 0;
+	// code
+	ZeroMemory(&pfd_gdj, sizeof(PIXELFORMATDESCRIPTOR)); //memset((void*)&pfd_gdj, NULL, sizeof(PIXELFORMATDESCRIPTOR))
+
+	// initialization of PIXELFORMATDESCRIPTOR structure
+	pfd_gdj.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+	pfd_gdj.nVersion = 1;
+	pfd_gdj.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+	pfd_gdj.iPixelType = PFD_TYPE_RGBA;
+	pfd_gdj.cColorBits = 32;
+	pfd_gdj.cRedBits = 8;
+	pfd_gdj.cGreenBits = 8;
+	pfd_gdj.cBlueBits = 8;
+	pfd_gdj.cAlphaBits = 8;
+	pfd_gdj.cDepthBits = 32; // 24 also can be done
+
+	// GetDC()
+	ghdc_gdj = GetDC(ghwnd_gdj);
+
+	// Choose PIXEL Format
+	iPixelFormatIndex = ChoosePixelFormat(ghdc_gdj, &pfd_gdj);
+	if (iPixelFormatIndex == 0)
+	{
+		return -1;
+	}
+
+	// Set Chosen Pixel Format
+	if (SetPixelFormat(ghdc_gdj, iPixelFormatIndex, &pfd_gdj) == FALSE)
+	{
+		return -2;
+	}
+
+	// Create OpenGL Rendering Context
+	ghrc_gdj = wglCreateContext(ghdc_gdj);
+	if (ghrc_gdj == NULL)
+	{
+		return -3;
+	}
+
+	// Make rendering context as current context
+	if (wglMakeCurrent(ghdc_gdj, ghrc_gdj) == FALSE)
+		return -4;
+
+	// GLEW Initialization
+	if (glewInit() != GLEW_OK)
+	{
+		return -5;
+	}
+
+	// Print OpenGL Info
+	PrintGLInfo();
+
+	// TODO
+
+
+
+	// TODO
+	// Depth Related changes
+	glClearDepth(1.0f);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+
+	// Deprecated (IMP)
+	//glShadeModel(GL_SMOOTH); REMOVED
+	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); REMOVED
+
+	perspectiveProjectionMatrix = mat4::identity();
+
+	// Warmup resize call
+	resize(WIN_WIDTH, WIN_HEIGHT);
+
+	return 0;
+}
+
+void PrintGLInfo(void)
+{
+	// Local Variable Declarations
+	GLint NumExtensions_gdj = 0;
+
+	// Code
+	fprintf(gpFile_gdj, "OpenGL Vendor   : %s\n", glGetString(GL_VENDOR));
+	fprintf(gpFile_gdj, "OpenGL Renderer : %s\n", glGetString(GL_RENDERER));
+	fprintf(gpFile_gdj, "OpenGL Version  : %s\n", glGetString(GL_VERSION));
+	fprintf(gpFile_gdj, "GLSL Version    : %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+	glGetIntegerv(GL_NUM_EXTENSIONS, &NumExtensions_gdj);
+
+	fprintf(gpFile_gdj, "Number of Supported Extensions : %d\n", NumExtensions_gdj);
+
+	for (int i = 0; i < NumExtensions_gdj; i++)
+	{
+		fprintf(gpFile_gdj, "%s\n", glGetStringi(GL_EXTENSIONS, i));
+	}
+}
+
+void resize(int width, int height)
+{
+	// TODO
+	// code
+	if (height == 0)
+		height = 1; // to avoid divided by 0 i.e illegal statement in future call
+
+	glViewport(0, 0, GLsizei(width), GLsizei(height));
+
+	perspectiveProjectionMatrix = vmath::perspective(45.0f, 
+													(GLfloat) width / (GLfloat) height, 
+													0.1f, 
+													100.0f);
+
+}
+
+void display(void)
+{
+	// TODO
+	// code
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// Here our game programming will be done
+
+	// Use shaderProgramObject
+	glUseProgram(shaderProgramObject);
+
+	// TODO
+
+	//Unused shader program object
+	glUseProgram(0);
+
+	SwapBuffers(ghdc_gdj);
+}
+
+void update(void)
+{
+	// TODO
+	// code
+}
+
+void uninitialize(void)
+{
+	// function declarations
+	void ToggleFullScreen(void);
+
+	// code
+	if (gbFullScreen_gdj)
+	{
+		ToggleFullScreen();
+	}
+
+	// Deletion and uninitialization of vbo
+	if (vbo_cube_position)
+	{
+		glDeleteBuffers(1, &vbo_cube_position);
+		vbo_cube_position = 0;
+	}
+
+	// Deletion and uninitialization of vio
+	if (vao_cube)
+	{
+		glDeleteVertexArrays(1, &vao_cube);
+		vao_cube = 0;
+	}
+
+	// Deletion and uninitialization of vbo
+	if (vbo_cube_color)
+	{
+		glDeleteBuffers(1, &vbo_cube_color);
+		vbo_cube_color = 0;
+	}
+
+	// Deletion and uninitialization of vbo
+	if (vbo_pyramid_color)
+	{
+		glDeleteBuffers(1, &vbo_pyramid_color);
+		vbo_pyramid_color = 0;
+	}
+
+	// Deletion and uninitialization of vbo
+	if (vbo_pyramid_position)
+	{
+		glDeleteBuffers(1, &vbo_pyramid_position);
+		vbo_pyramid_position = 0;
+	}
+
+	// Deletion and uninitialization of vio
+	if (vao_pyramid)
+	{
+		glDeleteVertexArrays(1, &vao_pyramid);
+		vao_pyramid = 0;
+	}
+
+
+
+	// Shader uninitialization
+	if (shaderProgramObject)
+	{
+		glUseProgram(shaderProgramObject);
+
+		GLsizei numAttachedShaders;
+		glGetProgramiv(shaderProgramObject, GL_ATTACHED_SHADERS, &numAttachedShaders);
+
+		GLuint* shaderObjects = NULL;
+		shaderObjects = (GLuint*)malloc(numAttachedShaders * sizeof(GLuint));
+
+		glGetAttachedShaders(shaderProgramObject, numAttachedShaders, &numAttachedShaders, shaderObjects);
+
+		for (GLsizei i = 0; i < numAttachedShaders; i++)
+		{
+			glDetachShader(shaderProgramObject, shaderObjects[i]);
+			glDeleteShader(shaderObjects[i]);
+			shaderObjects[i] = 0;
+		}
+
+		free(shaderObjects);
+		shaderObjects = NULL;
+
+		glUseProgram(0);
+		glDeleteProgram(shaderProgramObject);
+		shaderProgramObject = 0;
+	}
+
+	if (wglGetCurrentContext() == ghrc_gdj)
+	{
+		wglMakeCurrent(NULL, NULL);
+	}
+
+	if (ghrc_gdj)
+	{
+		wglDeleteContext(ghrc_gdj);
+		ghrc_gdj = NULL;
+	}
+
+	if (ghdc_gdj)
+	{
+		ReleaseDC(ghwnd_gdj, ghdc_gdj);
+		ghdc_gdj = NULL;
+	}
+
+	if (ghwnd_gdj)
+	{
+		DestroyWindow(ghwnd_gdj);
+		ghwnd_gdj = NULL;
+	}
+
+	if (gpFile_gdj)
+	{
+		fprintf(gpFile_gdj, "Log file successfully closed.\n");
+		fclose(gpFile_gdj);
+		gpFile_gdj = NULL;
+	}
+}
