@@ -32,3 +32,5 @@
 *.app
 /.vs/CodingPractice_2023-24/v17
 /.vs
+/Libraries/01-StaticLibrary/StaticMath/.vs/StaticMath/v17
+*.bak
