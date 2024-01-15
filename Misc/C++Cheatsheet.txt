@@ -1,0 +1,32 @@
+C++98:
+	Copy Constructor & Assignment operator
+	Virtual Function
+	vTable And vPtr
+	operator overloading: pre and post
+	Casting Operators in C++: https://www.geeksforgeeks.org/casting-operators-in-cpp/
+
+C++11:
+	The auto keyword
+	Range based for loop
+	Lambda Expressions
+	Smart Pointers
+	The constexpr keyword
+	The nullptr keyword
+	Type traits
+	Thread support
+	Delegating constructor
+	Deleted and defaulted functions
+	Reference: https://www.programiz.com/cpp-programming/cpp-11
+
+	smart pointer implementation
+	
+
+STL:
+	vector implementation
+	https://www.geeksforgeeks.org/cpp-stl-cheat-sheet/?ref=lbp
+
+Design Patters:
+
+SOLID Principles:
+
+Multithreading:
