@@ -1,0 +1,70 @@
+The open-closed principle states that your code should be open for extension but closed to modification.
+
+If you need to add some additional functionality to your application then you shouldn’t be touching any of the existing methods or classes to do that.
+
+After all, you would have spent ages writing all the unit tests for those methods and any changes will cause them to break.
+
+You are writing unit tests, right?
+
+On top of that, introducing new functionality to an existing method might cause unexpected consequences where ever that method is being used.
+
+So how do add functionality without changing the code of your existing methods and classes?
+
+There are a number of different ways that you can achieve this but depending on what language you are using not all of them will be an option for you. For these examples, I am using C# but you will need to check what options you have available for your preferred language.
+
+***Decorator Pattern
+One way to achieve this is to use the decorator pattern. If you need to add functionality to a method that happens before or after the existing code, then we can use this pattern.
+
+Instead of modifying the method, we create a new class that implements the same interface.
+
+Example:
+public class NewService : IService
+{
+	private readonly IService _service;
+
+	public NewService(IService service)
+	{
+		_service = service;
+	}
+
+	public int DoSomething(int input)
+	{
+		// Do something new here
+		
+		var value = _service.DoSomething(input);
+		
+		// or here
+		return value * 2;
+	}
+}
+
+We can then have our new method call our old method and then add the additional functionality either before or after this method call.
+
+Then we can call this new method without affecting the other code in our application.
+
+The benefit of this approach is that we can use dependency injection to control at runtime when this new class is used.
+
+However, you can only use this approach if the method you want to extend is public and included in the interface.
+
+***Extension Methods
+Another great option is to use extension methods which you can do with languages such as C# or Kotlin.
+
+Extension methods allow you to add a method to an existing class without having to modify the file.
+Example:
+public static class AddedFunctionality  
+{  
+  public static void DoSomethingElse(this IService service, int input)  
+  {
+	 // Do something new here
+		
+	 _service.DoSomething(input);
+		
+	 // or here 
+  }  
+}
+
+Provided you have the namespace imported, you can use the extension method in your code as if it were part of the original class.
+
+The only downside of using extension methods is that, unlike the decorator pattern, you can’t switch between different implementations at runtime.
+
+There are also many other ways to add functionality without changing the original code such as using inheritance or adding attributes.

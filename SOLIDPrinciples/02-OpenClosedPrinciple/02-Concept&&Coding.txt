@@ -1,0 +1,53 @@
+Open for Extension but Closed for Modification
+
+Example:
+class InvoiceDao/*Data Access Layer or Object*/ {
+	Invoice invoice;
+
+	public InvoiceDao(Invoice invoice) {
+		this.invoice = invoice;
+	}
+
+	public void saveToDB() {
+		// Save the data into DB
+	}
+}
+
+Wrong Solution:
+class InvoiceDao/*Data Access Layer or Object*/ {
+	Invoice invoice;
+
+	public InvoiceDao(Invoice invoice) {
+		this.invoice = invoice;
+	}
+
+	public void saveToDB() {
+		// Save the Invoice into DB
+	}
+
+	public void saveToFile(String filename) {
+		// Save the Invoice in the File with the given name
+	}
+
+}
+
+
+Correct Solution:
+interface InvoiceDao {
+	public void save(Invoice invoice);
+}
+
+
+class DatabaseInvoiceDao implements InvoiceDao {
+	@override
+	public void save(Invoice invoice) {
+		// Save to DB
+	}
+}
+
+class FileInvoiceDao implements InvoiceDao {
+	@override
+	public void save(Invoice invoice) {
+		// Save to file
+	}
+}

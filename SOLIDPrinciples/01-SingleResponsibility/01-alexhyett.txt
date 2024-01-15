@@ -1,0 +1,46 @@
+This is one of the simpler principles of SOLID. As the name suggests your classes should have a single responsibility.
+
+Giving a class multiple responsibilities makes you more likely to introduce bugs when something needs to change. A class should have only one reason to change.
+
+So what does this look like in real life?
+
+Let’s say we are writing a teaching application and we have a student class. We could put all of this in the student class like this:
+
+Example:
+public class Student
+{
+	public int StudentId { get; set; }
+	public string FirstName { get; set; }
+	public string LastName { get; set; }
+	public string Email { get; set; }
+
+	public void Save()
+	{
+		// Save student to database
+	}
+
+	public void Email(string subject, string body)
+	{
+		// Email implementation
+	}
+
+	public void Enrol(Course course)
+	{
+		// Enrol the student in a courseSer
+	}
+}
+
+This however quite clearly breaks the single responsibility principle. The student class is now responsible for:
+
+	Storing the student’s details
+	Saving them to the database
+	Sending them emails
+	Adding them to courses
+
+We now have multiple reasons that we might need to change this file and therefore multiple ways that we could introduce bugs.
+
+If we have multiple developers on our team working on different features for a student, they would need to update the same file, which will cause all sorts of merge conflicts.
+
+We need to extract all those responsibilities into separate classes to fix this. This has the added benefit of allowing us to reuse that functionality in other parts of our application without having to repeat ourselves.
+
+Even though this seems quite simple it is very easy to take this too far. Single responsibility doesn’t mean that your class should do only one thing. It just means everything that it does should be closely related so you don’t end up with bloated classes.

@@ -1,0 +1,12 @@
+The Liskov Substitution principle is a little harder to understand, it states that a child class should always be able to perform the same actions as its parent.
+
+So if we had an actual Parent Class that has the actions:
+Eat
+Sleep
+Work
+MakeDinner
+Then we have a Child Class that is inherited from the Parent Class, there are obviously some actions that the child cannot do such as MakeDinner or Work.
+
+This would therefore break the Liskov Substitution Principle as we can’t replace the child with the parent.
+
+It would therefore make more sense to have a Human class and then have Adult and Child classes inherit from that class instead.

@@ -1,0 +1,33 @@
+high-level models shouldn’t depend on low-level modules. Both should depend on an abstraction.
+
+For example, if you had a service class and you wanted to save something to the database you could create a new instance of the repository directly inside the class.
+public class Service
+{
+	private readonly Repository _repo = new Repository();
+
+	public void Save(Item item)
+	{
+		_repo.Add(item);
+	}
+}
+But now your service is dependent on a lower-level component.
+
+To overcome this we create an interface for our repository and then inject it into the constructor when we create our class.
+public class Service
+{
+	private readonly IRepository _repo;
+
+	public Service(IRepository repo)
+	{
+		_repo = repo;
+	}
+
+	public void Save(Item item)
+	{
+		_repo.Add(item);
+	}
+}
+
+Now both the high-level and low-level modules depend on an abstraction which is the interface.
+
+The service doesn’t need to know which repository it is using or how it works. It only cares that it meets the specifications of the repository interface.

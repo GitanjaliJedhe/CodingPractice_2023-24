@@ -1,0 +1,23 @@
+Class should depend on interfaces rather than concrete classes
+
+Example:
+class MacBook {
+	private final Wiredkeyboard keyboard; // Concrete class
+	private final WiredMouse mouse; // Concrete class
+
+	public MacBook() {
+		keyboard = new Wiredkeyboard();
+		mouse = new WiredMouse();
+	}
+}
+
+Correct Solution:
+class MacBook {
+	private final Keyboard keyboard; // Interfaces
+	private final Mouse mouse; // Interfaces
+
+	public MacBook(Keyboard keyboard, Mouse mouse) {
+		this.keyboard = keyboard;
+		this.mouse = mouse;
+	}	
+}

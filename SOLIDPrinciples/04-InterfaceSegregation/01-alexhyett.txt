@@ -1,0 +1,41 @@
+Interfaces provide a contract that classes need to implement. If you have particularly bulky interfaces, the classes are forced to implement methods that might not be needed.
+
+If you have ever used the Repository Pattern you might have come across this before.
+
+With this pattern, you might have an interface that looks like this:
+public interface IRepository<T>
+{
+	void Add(T item);
+	void Delete(T item);
+	void Update(T item);
+	T GetById(int Id);
+	IEnumerable<T> GetAll();
+}
+Every time you use this interface you have to write an implementation for each of the methods even if you aren’t going to use them all.
+
+You could of course throw a NotImplementedException, but that would also break the Liskov Substitution Principle.
+
+To overcome this you can split these methods into separate interfaces. You can always have a main interface that inherits from all the others.
+
+public interface IItemReader<T>
+{
+	T GetById(int Id);
+	IEnumerable<T> GetAll();
+}
+
+public interface IItemWriter<T>
+{
+	void Add(T item);
+	void Update(T item);
+}
+
+public interface IItemRemover<T>
+{
+	void Delete(T item);
+}
+
+public interface IRepository<T> : IItemReader<T>, IItemWriter<T>, IItemRemover<T>
+{
+}
+
+This way you only need to implement the methods that you are actually using and you don’t have to worry about calling some code that hasn’t been written yet.

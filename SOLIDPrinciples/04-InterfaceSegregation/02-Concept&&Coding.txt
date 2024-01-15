@@ -1,0 +1,43 @@
+Interface should be such, that client should implement unnecessary functions they do not need.
+
+Example:
+interface RestaurantEmployee {
+	void washDishes();
+	void serveCustomers();
+	void cookFood();
+}
+
+class waiter implements RestaurantEmployee {
+	public void washDishes() {
+		// not my job
+	}
+	public void serveCustomers() {
+		// yes and here is my implementation
+		System.out.println("serving the customer");
+	}
+
+	void cookFood() {
+		// not my job
+	}
+}
+
+Correct Solution:
+interface ChefInterface {
+	void cookFood();
+	void decideMenu();
+}
+
+interface WaiterInterface {
+	void serveCustomers();
+	void takeOrder();
+}
+
+class waiter implements WaiterInterface {
+	public void serveCustomers() {
+		System.out.println("serving the customer");
+	}
+
+	public void takeOrder() {
+		System.out.println("taking orders");
+	}
+}
