@@ -1,0 +1,9 @@
+/*	 
+* Singletons should not be cloneable.
+*/
+Singleton(const Singleton& other) = delete;
+
+/*
+* Singletons should not be assignable.
+*/
+void operator=(const Singleton &other) = delete;

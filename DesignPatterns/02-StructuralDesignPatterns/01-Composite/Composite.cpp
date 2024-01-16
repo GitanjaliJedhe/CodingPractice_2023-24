@@ -1,85 +1,66 @@
-/*
-Say you have to create a page which has operations like add, delete, remove and 
-also a copy which will have the same operations as the individual pages.
-Such situation is the best dealt with the composite pattern.
-
-Now the same operation that can be applied to an individual object and 
-can also be applied to the collection of those individual object 
-makes it very easy to work with a larger object which is made of the smaller independent objects.
-*/
-
 #include <iostream>
 #include <vector>
 
-class PageObject {
+class FileSystem {
 public:
-	virtual void Add(PageObject a) {
-	}
-
-	virtual void Remove() {
-	}
-
-	virtual void Delete(PageObject a) {
-	}
+	virtual void display() const = 0;
 };
 
-class Page : public PageObject {
-public:
-	void Add(PageObject a) {
-		std::cout << "Something is added to the page" << std::endl;
-	}
-
-	void Remove() {
-		std::cout << "Something is removed from the page" << std::endl;
-	}
-
-	void Delete(PageObject a) {
-		std::cout << "Something is deleted from page" << std::endl;
-	}
-};
-
-class Copy : public PageObject {
+class File : public FileSystem {
 private:
-	std::vector<PageObject> copyPages;
+	std::string name;
+	int size;
 
 public:
-	void AddElement(PageObject a) {
-		copyPages.push_back(a);
+	File(const std::string& name_, int size_) : name(name_), size(size_) {
 	}
 
-	void Add(PageObject a) {
-		std::cout << "Something is added to the copy" << std::endl;
+	void display() const override {
+		std::cout << "File: " << name << " (" << size << " bytes)" << std::endl;
+	}
+};
+
+class Directory : public FileSystem {
+private:
+	std::string name;
+	std::vector<FileSystem*> components;
+
+public:
+	Directory(const std::string &name_) : name(name_) {
 	}
 
-	void Remove() {
-		std::cout << "Something is removed from the copy" << std::endl;
+	void addComponent(FileSystem* component) {
+		components.push_back(component);
 	}
 
-	void Delete(PageObject a) {
-		std::cout << "Something is deleted from copy" << std::endl;
+	void display() const override {
+		std::cout << "Directory: " << name << std::endl;
+		for (const auto& component : components) {
+			component->display();
+		}
 	}
 };
 
 int main() {
-	Page a;
-	Page b;
-	Copy allcopy;
-	allcopy.AddElement(a);
-	allcopy.AddElement(b);
+	// Create leaf objects (files) 
+	FileSystem* file1 = new File("document.txt", 1024);
+	FileSystem* file2 = new File("Image.jpg", 2048);
 
-	allcopy.Add(a);
-	a.Add(b);
+	// Create a composite object (directory) 
+	Directory* directory = new Directory("My Documents");
 
-	allcopy.Remove();
-	b.Remove();
+	directory->addComponent(file1);
+	directory->addComponent(file2);
+
+	// Display the directory (including its contents) 
+	directory->display();
 
 	return 0;
 }
 
 /*
-* Output:
-Something is added to the copy
-Something is added to the page
-Something is removed from the copy
-Something is removed from the page
+Output:
+Directory: My Documents
+File: document.txt (1024 bytes)
+File: Image.jpg (2048 bytes)
 */

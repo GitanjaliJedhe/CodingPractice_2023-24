@@ -1,7 +1,6 @@
 C++98:
 	Copy Constructor & Assignment operator
-	Virtual Function
-	vTable And vPtr
+	Virtual Function (vTable And vPtr)
 	operator overloading: pre and post
 	Casting Operators in C++: https://www.geeksforgeeks.org/casting-operators-in-cpp/
 
