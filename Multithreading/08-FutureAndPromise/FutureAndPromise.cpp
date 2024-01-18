@@ -13,19 +13,24 @@ Each std::promise object has an associated std::future object that will give the
 #include <future>
 
 void initializer(std::promise<int> *promObj) {
-	std::cout << "Inside Thread" << std::endl;
-	promObj->set_value(55);
+	int val = 989;
+	promiseObj->set_value(val);
+	std::cout << "Inside Thread " << std::this_thread::get_id() << " Value = " << val << std::endl;
 }
 
 int main() {
 	std::promise<int> promiseObj;
 	std::future<int> futureObj = promiseObj.get_future();
 	std::thread th(initializer, &promiseObj);
+
+	std::cout << "Inside Main Thread Value = " << futureObj.get() << std::endl;
+
 	th.join();
 
 	return 0;
 }
 
 /* Output:
-Inside Thread
+Inside Thread 24304 Value = 989
+Inside Main Thread Value = 989
 */
