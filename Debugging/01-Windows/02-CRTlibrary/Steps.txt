@@ -1,0 +1,7 @@
+It does the same thing but by code, so you can integrate it in an automatic build system, 
+the functions _CrtMemCheckpoint take the snapshots and _CrtMemDifference compare the memory states of snapshot and returns true is they are different.
+
+Since it is the case, it enters the conditional block and prints details about the leaks 
+via several functions (see _CrtMemDumpStatistics , _CrtMemDumpAllObjectsSince and _CrtDumpMemoryLeaks - the latter doesn't require snapshots).
+
+To see the output, put a break point in the last line "return 0", hit F5 and look at the debug console. Here is the output :

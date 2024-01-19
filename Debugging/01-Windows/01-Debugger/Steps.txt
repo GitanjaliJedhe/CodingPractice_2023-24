@@ -1,0 +1,23 @@
+Reference: https://stackoverflow.com/questions/4790564/finding-memory-leaks-in-a-c-application-with-visual-studio
+
+Create the following main.cpp file (in a new console application) :
+
+#include <string.h>
+int main()
+{
+ int a = 1;
+ char* s = new char[17];
+ strcpy_s(s,17,"stackoverflow_pb");
+ char* ss = new char[14];
+ strcpy_s(ss, 14,"stackoverflow");
+ delete[] ss;
+ return 0;
+}
+
+Then :
+1) Put a breakpoint on the first line "int a..."
+2) Click Debug > Windows > Show Diagnostic Tools; and pick memory usage
+3) Then debug the code (F5), when the breakpoint is hit, click Take snapshot on the Memory Usage summary toolbar.
+4) Go to the last line "return 0.." (step over (F10) several times) and take another snapshot.
+5) Click on the red arrow in the second snapshot (in memory usage tab)
+6)this will open a new "snapshot" tab that permits you to compare this snapshot with the first one (or another one) and to detect memory leaks. In this example there is a memory leak for variable s (stackoverflow_pb). You can find it by double click the "char[]" object.

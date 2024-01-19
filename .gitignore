@@ -36,3 +36,16 @@
 *.bak
 /CPA/VECTOR/CLASS_VERSION/.vscode
 /CPA/VECTOR/TEMPLATE_VERSION/.vscode
+/Debugging/01-Windows/01-Debugger/MemoryLeaks/.vs/MemoryLeaks/v17
+/Debugging/01-Windows/01-Debugger/MemoryLeaks/x64/Debug/MemoryLeaks.tlog
+/Debugging/01-Windows/01-Debugger/MemoryLeaks/x64/Debug
+/Debugging/01-Windows/01-Debugger/MemoryLeaks/MemoryLeaks.vcxproj.user
+/Debugging/01-Windows/01-Debugger/MemoryLeaks/MemoryLeaks.vcxproj.filters
+/Debugging/01-Windows/01-Debugger/MemoryLeaks/MemoryLeaks.vcxproj
+/Debugging/01-Windows/01-Debugger/MemoryLeaks/MemoryLeaks.sln
+/Debugging/01-Windows/02-CRTlibrary/MemoryLeaks/.vs/MemoryLeaks/v17
+/Debugging/01-Windows/02-CRTlibrary/MemoryLeaks/x64/Debug
+/Debugging/01-Windows/02-CRTlibrary/MemoryLeaks/MemoryLeaks.vcxproj.user
+/Debugging/01-Windows/02-CRTlibrary/MemoryLeaks/MemoryLeaks.vcxproj.filters
+/Debugging/01-Windows/02-CRTlibrary/MemoryLeaks/MemoryLeaks.vcxproj
+/Debugging/01-Windows/02-CRTlibrary/MemoryLeaks/MemoryLeaks.sln
