@@ -1,0 +1,3 @@
+A friend class can access private and protected members of other classes in which it is declared as a friend. 
+It is sometimes useful to allow a particular class to access private and protected members of other classes. 
+For example, a LinkedList class may be allowed to access private members of Node.

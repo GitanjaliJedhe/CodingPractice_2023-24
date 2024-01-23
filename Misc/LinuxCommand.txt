@@ -1,0 +1,11 @@
+locate: 
+Database
+sudo updatedb
+
+find:
+File System
+
+File Permission:
+read 4
+write 2
+execute 1
