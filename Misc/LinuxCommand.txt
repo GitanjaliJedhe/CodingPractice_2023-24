@@ -9,3 +9,8 @@ File Permission:
 read 4
 write 2
 execute 1
+
+process snapshot:
+ps -ef
+-e : display all processes.
+-f : stands full-format listing, which provides detailed information about the processes
