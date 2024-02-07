@@ -1,0 +1,1 @@
+Note: This class template is deprecated as of C++11. unique_ptr is a new facility with a similar functionality, but with improved security.
